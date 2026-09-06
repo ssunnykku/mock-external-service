@@ -1,0 +1,33 @@
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: mock-mariadb
+    ports:
+      - '3306:3310'
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: mock_external
+      MARIADB_USER: app
+      MARIADB_PASSWORD: app1234
+    volumes:
+      - mariadb-data:/var/lib/mysql
+      - ../doc/sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ../doc/sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+volumes:
+  mariadb-data:
+  rabbitmq-data:
